@@ -1,9 +1,11 @@
 let gameTime = 0;
+let rewriteCount = 0;
 
 const gameTimeElement = document.getElementById("game-time");
 const addButton = document.getElementById("add-time");
 const removeButton = document.getElementById("remove-time");
-
+const rewriteCountElement = document.getElementById("rewrite-count");
+const rewriteButton = document.getElementById("rewrite-button");
 
 function updateDisplay() {
 
@@ -31,6 +33,13 @@ removeButton.addEventListener("click", function () {
         gameTime -= 60;
     }
 
+    updateDisplay();
+});
+
+rewriteButton.addEventListener("click", function () {
+    rewriteCount++;
+    gameTime += 60;
+    rewriteCountElement.textContent = rewriteCount;
     updateDisplay();
 });
 
