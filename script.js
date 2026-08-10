@@ -1,5 +1,6 @@
 let gameTime = 0;
 let rewriteCount = 0;
+let rewriteLimit = 20;
 
 const gameTimeElement = document.getElementById("game-time");
 const addButton = document.getElementById("add-time");
@@ -37,10 +38,13 @@ removeButton.addEventListener("click", function () {
 });
 
 rewriteButton.addEventListener("click", function () {
-    rewriteCount++;
-    gameTime += 60;
-    rewriteCountElement.textContent = rewriteCount;
-    updateDisplay();
+    if(rewriteCount >= rewriteLimit) {
+        return;
+    }
+        rewriteCount++;
+        gameTime += 60;
+        rewriteCountElement.textContent = rewriteCount;
+        updateDisplay();
 });
 
 
