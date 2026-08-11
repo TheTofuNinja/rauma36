@@ -40,11 +40,12 @@ removeButton.addEventListener("click", function () {
 rewriteButton.addEventListener("click", function () {
     if(rewriteCount >= rewriteLimit) {
         return;
-    }
+    }else {
         rewriteCount++;
         gameTime += 60;
         rewriteCountElement.textContent = rewriteCount;
         updateDisplay();
+    }
 });
 
 
