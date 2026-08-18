@@ -1,4 +1,4 @@
-// 1. CẤU HÌNH FIREBASE (Thay bằng config từ Firebase Console của bạn)
+// 1. CẤU HÌNH FIREBASE DỰ ÁN TIME MANAGER
 const firebaseConfig = {
   apiKey: "AIzaSyDGo7vga_lpcmYfrbz-D9I-qLt6Pm__6fE",
   authDomain: "time-manager-backend.firebaseapp.com",
@@ -18,51 +18,56 @@ let currentUser = null;
 let gameTime = 0;
 let timer = null;
 let items = [];
-let authMode = 'login'; // 'login' hoặc 'register'
 
 const gameTimeElement = document.getElementById("game-time");
 const itemsContainer = document.getElementById("items-container");
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
 
-// 3. XỬ LÝ CHUYỂN MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ
-function setAuthMode(mode) {
-    authMode = mode;
-}
-
-function handleAuthSubmit(event) {
-    event.preventDefault();
+// 3. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ
+function handleLogin() {
     const email = document.getElementById("auth-email").value;
     const pass = document.getElementById("auth-password").value;
 
-    if (authMode === 'register') {
-        auth.createUserWithEmailAndPassword(email, pass)
-            .then(() => alert("Đăng ký thành công!"))
-            .catch(err => alert("Lỗi: " + err.message));
-    } else {
-        auth.signInWithEmailAndPassword(email, pass)
-            .catch(err => alert("Lỗi đăng nhập: " + err.message));
+    if (!email || !pass) {
+        alert("Vui lòng nhập đầy đủ Email và Mật khẩu!");
+        return;
     }
+
+    auth.signInWithEmailAndPassword(email, pass)
+        .catch(err => alert("Lỗi đăng nhập: " + err.message));
+}
+
+function handleRegister() {
+    const email = document.getElementById("auth-email").value;
+    const pass = document.getElementById("auth-password").value;
+
+    if (!email || !pass) {
+        alert("Vui lòng nhập đầy đủ Email và Mật khẩu!");
+        return;
+    }
+
+    auth.createUserWithEmailAndPassword(email, pass)
+        .then(() => alert("Đăng ký thành công!"))
+        .catch(err => alert("Lỗi đăng ký: " + err.message));
 }
 
 function logout() {
     auth.signOut();
 }
 
-// 4. LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP ĐỂ CHUYỂN TRANG
+// 4. LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP
 auth.onAuthStateChanged(user => {
     currentUser = user;
     const authScreen = document.getElementById("auth-screen");
     const mainApp = document.getElementById("main-app");
 
     if (user) {
-        // Đã đăng nhập -> Hủy màn hình Auth, hiển thị Trang chính
         authScreen.style.display = "none";
         mainApp.style.display = "block";
         document.getElementById("user-email").textContent = user.email;
         loadUserData();
     } else {
-        // Chưa đăng nhập / Đã Đăng xuất -> Hiện màn hình Auth full-page, ẩn Trang chính
         authScreen.style.display = "flex";
         mainApp.style.display = "none";
         items = [];
@@ -101,7 +106,7 @@ function loadUserData() {
     });
 }
 
-// 6. RENDER CÁC HOẠT ĐỘNG VÀ QUẢN LÝ
+// 6. QUẢN LÝ TÁC VỤ VÀ ĐỒNG HỒ
 function renderItems() {
     itemsContainer.innerHTML = "";
 
@@ -246,6 +251,3 @@ function pauseGame() {
     if (startBtn) startBtn.disabled = false;
     if (pauseBtn) pauseBtn.disabled = true;
 }
-
-    if (startBtn) startBtn.disabled = false;
-    if (pauseBtn) pauseBtn.disabled = true;
