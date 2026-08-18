@@ -77,7 +77,52 @@ button:disabled {
     background-color: #ff9800;
     color: white;
 }
+/* Thêm style cho thẻ form */
+.add-item-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+#add-item-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#add-item-form input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+}
+
+#add-item-form input:focus {
+    border-color: #2196F3;
+}
+
+.btn-add {
+    background-color: #673AB7;
+    color: white;
+    font-weight: bold;
+}
 .btn-complete{
     background-color: #4CAF50;
+    color: white;
+}
+/* Khung chứa các nút bấm trong thẻ item */
+.card-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Nút Xóa */
+.btn-delete {
+    background-color: #f44336;
     color: white;
 }
