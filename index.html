@@ -13,55 +13,76 @@
 </head>
 <body>
 
-    <main class="container">
-        <h1>My Time Manager</h1>
+    <!-- MÀN HÌNH 1: TRANG ĐĂNG NHẬP / ĐĂNG KÝ (FULL MÀN HÌNH) -->
+    <div id="auth-screen" class="full-page-center">
+        <div class="auth-box">
+            <h1>⌛ My Time Manager</h1>
+            <p class="subtitle">Đăng nhập để tiếp tục tiến trình học tập</p>
+            
+            <form onsubmit="handleAuthSubmit(event)">
+                <div class="input-group">
+                    <label for="auth-email">Email</label>
+                    <input type="email" id="auth-email" placeholder="nhapemail@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="auth-password">Mật khẩu</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" required>
+                </div>
+                
+                <div class="auth-actions">
+                    <button type="submit" onclick="setAuthMode('login')" class="btn-primary">Đăng nhập</button>
+                    <button type="submit" onclick="setAuthMode('register')" class="btn-secondary">Đăng ký tài khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <!-- KHỐI ĐĂNG NHẬP / ĐĂNG XUẤT -->
-        <section class="auth-card">
-            <div id="auth-logged-out">
-                <h2>🔑 Đăng nhập / Đăng ký</h2>
-                <input type="email" id="auth-email" placeholder="Email">
-                <input type="password" id="auth-password" placeholder="Mật khẩu">
-                <div class="auth-buttons">
-                    <button onclick="login()">Đăng nhập</button>
-                    <button onclick="register()">Đăng ký</button>
+    <!-- MÀN HÌNH 2: TRANG ỨNG DỤNG CHÍNH (ẨN MẶC ĐỊNH) -->
+    <div id="main-app" style="display: none;">
+        <!-- Thanh Nav trên cùng -->
+        <header class="app-header">
+            <div class="container header-content">
+                <h2>📚 Time Manager</h2>
+                <div class="user-info">
+                    <span id="user-email">email@example.com</span>
+                    <button onclick="logout()" class="btn-logout">Đăng xuất</button>
                 </div>
             </div>
-            <div id="auth-logged-in" style="display: none;">
-                <p>Xin chào: <strong id="user-email"></strong></p>
-                <button onclick="logout()" class="btn-delete">Đăng xuất</button>
-            </div>
-        </section>
+        </header>
 
-        <!-- KHỐI ĐỒNG HỒ GAME -->
-        <section class="game-card">
-            <h2>🎮 Game Time</h2>
-            <div id="game-time">00:00</div>
-            <div class="timer-controls">
-                <button id="start-btn" onclick="startGame()">▶ Play Game</button>
-                <button id="pause-btn" onclick="pauseGame()" disabled>⏸ Tạm dừng</button>
-            </div>
-        </section>
+        <main class="container">
+            <!-- KHỐI ĐỒNG HỒ GAME -->
+            <section class="game-card">
+                <h2>🎮 Game Time</h2>
+                <div id="game-time">00:00</div>
+                <div class="timer-controls">
+                    <button id="start-btn" onclick="startGame()">▶ Play Game</button>
+                    <button id="pause-btn" onclick="pauseGame()" disabled>⏸ Tạm dừng</button>
+                </div>
+            </section>
 
-        <!-- FORM THÊM / SỬA HOẠT ĐỘNG -->
-        <section class="add-item-card">
-            <h2 id="form-title">➕ Thêm hoạt động mới</h2>
-            <form id="add-item-form" onsubmit="handleFormSubmit(event)">
-                <input type="hidden" id="edit-index" value="-1">
-                <input type="text" id="item-name" placeholder="Tên hoạt động" required>
-                <input type="number" id="item-limit" placeholder="Số lần tối đa" min="1" required>
-                <input type="number" id="item-reward" placeholder="Phút thưởng / 1 lần" min="1" required>
-                <button type="submit" id="form-submit-btn" class="btn-add">Thêm hoạt động</button>
-                <button type="button" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none;">Hủy sửa</button>
-            </form>
-        </section>
+            <!-- FORM THÊM / SỬA HOẠT ĐỘNG -->
+            <section class="add-item-card">
+                <h2 id="form-title">➕ Thêm hoạt động mới</h2>
+                <form id="add-item-form" onsubmit="handleFormSubmit(event)">
+                    <input type="hidden" id="edit-index" value="-1">
+                    <input type="text" id="item-name" placeholder="Tên hoạt động" required>
+                    <input type="number" id="item-limit" placeholder="Số lần tối đa" min="1" required>
+                    <input type="number" id="item-reward" placeholder="Phút thưởng / 1 lần" min="1" required>
+                    <div class="form-buttons">
+                        <button type="submit" id="form-submit-btn" class="btn-add">Thêm hoạt động</button>
+                        <button type="button" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none;">Hủy sửa</button>
+                    </div>
+                </form>
+            </section>
 
-        <!-- DANH SÁCH BÀI TẬP -->
-        <section class="item-section">
-            <h2>📚 Hoạt động học tập</h2>
-            <div id="items-container"></div>
-        </section>
-    </main>
+            <!-- DANH SÁCH BÀI TẬP -->
+            <section class="item-section">
+                <h2>📚 Hoạt động học tập</h2>
+                <div id="items-container"></div>
+            </section>
+        </main>
+    </div>
 
     <script src="script.js"></script>
 </body>
