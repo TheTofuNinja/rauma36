@@ -14,15 +14,15 @@ let items = [
     }
 ];
 
-
 const gameTimeElement = document.getElementById("game-time");
 const itemsContainer = document.getElementById("items-container");
 
 function renderItems() {
     itemsContainer.innerHTML = "";
 
-    for(let i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; i++) {
         let item = items[i];
+        let isMaxed = item.count >= item.limit;
 
         let itemElement = document.createElement("div");
         itemElement.classList.add("item-card");
@@ -31,27 +31,32 @@ function renderItems() {
             <p>Đã làm: <span>${item.count}/${item.limit}</span></p>
             <p>Thưởng: <span>${item.reward / 60} phút</span></p>
 
-            <button onclick="completeItem(${i})">Hoàn thành</button>
+            <button 
+                onclick="completeItem(${i})" 
+                ${isMaxed ? "disabled" : ""}
+                style="${isMaxed ? "background-color: #ccc; cursor: not-allowed;" : "background-color: #4CAF50; color: white;"}">
+                ${isMaxed ? "Đã đạt giới hạn" : "Hoàn thành"}
+            </button>
         `;
 
-    itemsContainer.appendChild(itemElement);
+        itemsContainer.appendChild(itemElement);
     }
 }
 
 function completeItem(index) {
     let item = items[index];
 
-    if(item.count >= item.limit) {
+    if (item.count >= item.limit) {
         return;
     }
+    
     item.count++;
     gameTime += item.reward;
     updateDisplay();
     renderItems();
-    }
+}
 
 function updateDisplay() {
-
     let minutes = Math.floor(gameTime / 60);
     let seconds = gameTime % 60;
 
@@ -61,6 +66,6 @@ function updateDisplay() {
     gameTimeElement.textContent = `${minutes}:${seconds}`;
 }
 
-
+// Khởi chạy ban đầu
 updateDisplay();
 renderItems();
