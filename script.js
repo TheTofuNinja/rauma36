@@ -249,4 +249,3 @@ function pauseGame() {
 
     if (startBtn) startBtn.disabled = false;
     if (pauseBtn) pauseBtn.disabled = true;
-}
