@@ -55,8 +55,29 @@ button {
     border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2 ease;
 }
 
-button:hover {
-    opacity: 0.8;
+button:hover:not(disabled) {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+button:disabled {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+    transform: none;
+}
+#start-btn {
+    background-color: #2196F3;
+    color: white;
+}
+#pause-btn {
+    background-color: #ff9800;
+    color: white;
+}
+.btn-complete{
+    background-color: #4CAF50;
+    color: white;
 }
