@@ -16,8 +16,6 @@ let items = [
 
 
 const gameTimeElement = document.getElementById("game-time");
-const addButton = document.getElementById("add-time");
-const removeButton = document.getElementById("remove-time");
 const itemsContainer = document.getElementById("items-container");
 
 function renderItems() {
@@ -64,21 +62,5 @@ function updateDisplay() {
 }
 
 
-addButton.addEventListener("click", function () {
-
-    gameTime += 60;
-
-    updateDisplay();
-});
-
-
-removeButton.addEventListener("click", function () {
-
-    if (gameTime >= 60) {
-        gameTime -= 60;
-    }
-
-    updateDisplay();
-});
 updateDisplay();
 renderItems();
