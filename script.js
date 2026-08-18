@@ -33,12 +33,24 @@ function renderItems() {
             <p>Đã làm: <span>${item.count}/${item.limit}</span></p>
             <p>Thưởng: <span>${item.reward / 60} phút</span></p>
 
-            <button>Hoàn thành</button>
+            <button onclick="completeItem(${i})">Hoàn thành</button>
         `;
 
     itemsContainer.appendChild(itemElement);
     }
 }
+
+function completeItem(index) {
+    let item = items[index];
+
+    if(item.count >= item.limit) {
+        return;
+    }
+    item.count++;
+    gameTime += item.reward;
+    updateDisplay();
+    renderItems();
+    }
 
 function updateDisplay() {
 
