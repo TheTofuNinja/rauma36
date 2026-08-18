@@ -1,14 +1,15 @@
 let gameTime = 0;
 let timer = null;
+
 let items = [
-    {name: "Rewrite Tiếng Anh", count: 0, limit: 20, reward: 60},
-    {name: "Vocabulary Tiếng Anh", count: 0, limit: 20, reward: 300}
+    { name: "Rewrite Tiếng Anh", count: 0, limit: 20, reward: 60 },
+    { name: "Vocabulary Tiếng Anh", count: 0, limit: 20, reward: 300 }
 ];
 
 const gameTimeElement = document.getElementById("game-time");
 const itemsContainer = document.getElementById("items-container");
 const startBtn = document.getElementById("start-btn");
-const pauseBtn = document.getElementById("pause-btn");
+const pauseBtn = document.getElementById("pause-btn") || document.getElementById("stop-btn");
 
 function renderItems() {
     itemsContainer.innerHTML = "";
@@ -24,27 +25,60 @@ function renderItems() {
             <p>Đã làm: <span>${item.count}/${item.limit}</span></p>
             <p>Thưởng: <span>${item.reward / 60} phút</span></p>
 
-            <button 
-                onclick="completeItem(${i})" 
-                ${isMaxed ? "disabled" : ""}
-                style="${isMaxed ? "background-color: #ccc; cursor: not-allowed;" : "background-color: #4CAF50; color: white;"}">
-                ${isMaxed ? "Đã đạt giới hạn" : "Hoàn thành"}
-            </button>
+            <div class="card-actions">
+                <button 
+                    onclick="completeItem(${i})" 
+                    ${isMaxed ? "disabled" : ""}
+                    class="btn-complete">
+                    ${isMaxed ? "Đã đạt giới hạn" : "Hoàn thành"}
+                </button>
+                <button onclick="deleteItem(${i})" class="btn-delete">Xóa</button>
+            </div>
         `;
 
         itemsContainer.appendChild(itemElement);
     }
 }
 
+// --- HÀM XÓA HOẠT ĐỘNG ---
+function deleteItem(index) {
+    // Xóa 1 phần tử tại vị trí index khỏi mảng items
+    items.splice(index, 1);
+    
+    // Cập nhật lại giao diện sau khi xóa
+    renderItems();
+}
+
+function addNewItem(event) {
+    event.preventDefault();
+
+    const nameInput = document.getElementById("item-name");
+    const limitInput = document.getElementById("item-limit");
+    const rewardInput = document.getElementById("item-reward");
+
+    const newItem = {
+        name: nameInput.value,
+        count: 0,
+        limit: parseInt(limitInput.value),
+        reward: parseInt(rewardInput.value) * 60
+    };
+
+    items.push(newItem);
+    renderItems();
+
+    nameInput.value = "";
+    limitInput.value = "";
+    rewardInput.value = "";
+}
+
 function completeItem(index) {
     let item = items[index];
 
-    if (item.count >= item.limit) {
-        return;
-    }
-    
+    if (item.count >= item.limit) return;
+
     item.count++;
     gameTime += item.reward;
+    
     updateDisplay();
     renderItems();
 }
@@ -60,17 +94,23 @@ function updateDisplay() {
 }
 
 function startGame() {
-    if(gameTime <= 0 || timer !== null) return;
-    startBtn.disabled = true;
-    pauseBtn.disabled = false;
+    if (gameTime <= 0) {
+        alert("Bạn chưa có thời gian chơi! Hãy làm bài tập bên dưới trước.");
+        return;
+    }
+
+    if (timer !== null) return;
+
+    if (startBtn) startBtn.disabled = true;
+    if (pauseBtn) pauseBtn.disabled = false;
 
     timer = setInterval(() => {
-        if(gameTime > 0) {
+        if (gameTime > 0) {
             gameTime--;
             updateDisplay();
         } else {
             pauseGame();
-            
+            alert("⏰ Hết giờ chơi!");
         }
     }, 1000);
 }
@@ -78,8 +118,9 @@ function startGame() {
 function pauseGame() {
     clearInterval(timer);
     timer = null;
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
+
+    if (startBtn) startBtn.disabled = false;
+    if (pauseBtn) pauseBtn.disabled = true;
 }
 
 updateDisplay();
