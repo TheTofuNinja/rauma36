@@ -1,21 +1,14 @@
 let gameTime = 0;
+let timer = null;
 let items = [
-    {
-        name: "Rewrite Tiếng Anh",
-        count: 0,
-        limit: 20,
-        reward: 60
-    },
-    {
-        name: "Vocabulary Tiếng Anh",
-        count: 0,
-        limit: 20,
-        reward: 300
-    }
+    {name: "Rewrite Tiếng Anh", count: 0, limit: 20, reward: 60},
+    {name: "Vocabulary Tiếng Anh", count: 0, limit: 20, reward: 300}
 ];
 
 const gameTimeElement = document.getElementById("game-time");
 const itemsContainer = document.getElementById("items-container");
+const startBtn = document.getElementById("start-btn");
+const pauseBtn = document.getElementById("pause-btn");
 
 function renderItems() {
     itemsContainer.innerHTML = "";
@@ -66,6 +59,28 @@ function updateDisplay() {
     gameTimeElement.textContent = `${minutes}:${seconds}`;
 }
 
-// Khởi chạy ban đầu
+function startGame() {
+    if(gameTime <= 0 || timer !== null) return;
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+
+    timer = setInterval(() => {
+        if(gameTime > 0) {
+            gameTime--;
+            updateDisplay();
+        } else {
+            pauseGame();
+            
+        }
+    }, 1000);
+}
+
+function pauseGame() {
+    clearInterval(timer);
+    timer = null;
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+}
+
 updateDisplay();
 renderItems();
