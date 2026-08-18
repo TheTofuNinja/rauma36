@@ -1,12 +1,44 @@
 let gameTime = 0;
-let rewriteCount = 0;
-let rewriteLimit = 20;
+let items = [
+    {
+        name: "Rewrite Tiếng Anh",
+        count: 0,
+        limit: 20,
+        reward: 60
+    },
+    {
+        name: "Vocabulary Tiếng Anh",
+        count: 0,
+        limit: 20,
+        reward: 300
+    }
+];
+
 
 const gameTimeElement = document.getElementById("game-time");
 const addButton = document.getElementById("add-time");
 const removeButton = document.getElementById("remove-time");
-const rewriteCountElement = document.getElementById("rewrite-count");
-const rewriteButton = document.getElementById("rewrite-button");
+const itemsContainer = document.getElementById("items-container");
+
+function renderItems() {
+    itemsContainer.innerHTML = "";
+
+    for(let i = 0; i < items.length; i++) {
+        let item = items[i];
+
+        let itemElement = document.createElement("div");
+        itemElement.classList.add("item-card");
+        itemElement.innerHTML = `
+            <h3>${item.name}</h3>
+            <p>Đã làm: <span>${item.count}/${item.limit}</span></p>
+            <p>Thưởng: <span>${item.reward / 60} phút</span></p>
+
+            <button>Hoàn thành</button>
+        `;
+
+    itemsContainer.appendChild(itemElement);
+    }
+}
 
 function updateDisplay() {
 
@@ -36,17 +68,5 @@ removeButton.addEventListener("click", function () {
 
     updateDisplay();
 });
-
-rewriteButton.addEventListener("click", function () {
-    if(rewriteCount >= rewriteLimit) {
-        return;
-    }else {
-        rewriteCount++;
-        gameTime += 60;
-        rewriteCountElement.textContent = rewriteCount;
-        updateDisplay();
-    }
-});
-
-
 updateDisplay();
+renderItems();
