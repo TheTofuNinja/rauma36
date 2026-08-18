@@ -34,6 +34,10 @@ h1 {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
+.item-section {
+    margin-top: 20px;
+}
+
 .game-card h2 {
     margin-top: 0;
 }
