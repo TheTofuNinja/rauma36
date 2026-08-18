@@ -5,11 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Time Manager</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- SDK Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
     <main class="container">
         <h1>My Time Manager</h1>
+
+        <!-- KHỐI ĐĂNG NHẬP / ĐĂNG XUẤT -->
+        <section class="auth-card">
+            <div id="auth-logged-out">
+                <h2>🔑 Đăng nhập / Đăng ký</h2>
+                <input type="email" id="auth-email" placeholder="Email">
+                <input type="password" id="auth-password" placeholder="Mật khẩu">
+                <div class="auth-buttons">
+                    <button onclick="login()">Đăng nhập</button>
+                    <button onclick="register()">Đăng ký</button>
+                </div>
+            </div>
+            <div id="auth-logged-in" style="display: none;">
+                <p>Xin chào: <strong id="user-email"></strong></p>
+                <button onclick="logout()" class="btn-delete">Đăng xuất</button>
+            </div>
+        </section>
 
         <!-- KHỐI ĐỒNG HỒ GAME -->
         <section class="game-card">
@@ -21,18 +43,20 @@
             </div>
         </section>
 
-        <!-- KHỐI THÊM HOẠT ĐỘNG MỚI (Bắt buộc phải có đoạn này) -->
+        <!-- FORM THÊM / SỬA HOẠT ĐỘNG -->
         <section class="add-item-card">
-            <h2>➕ Thêm hoạt động mới</h2>
-            <form id="add-item-form" onsubmit="addNewItem(event)">
-                <input type="text" id="item-name" placeholder="Tên hoạt động (vd: Giải Toán)" required>
+            <h2 id="form-title">➕ Thêm hoạt động mới</h2>
+            <form id="add-item-form" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="edit-index" value="-1">
+                <input type="text" id="item-name" placeholder="Tên hoạt động" required>
                 <input type="number" id="item-limit" placeholder="Số lần tối đa" min="1" required>
                 <input type="number" id="item-reward" placeholder="Phút thưởng / 1 lần" min="1" required>
-                <button type="submit" class="btn-add">Thêm hoạt động</button>
+                <button type="submit" id="form-submit-btn" class="btn-add">Thêm hoạt động</button>
+                <button type="button" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none;">Hủy sửa</button>
             </form>
         </section>
 
-        <!-- KHỐI DANH SÁCH BÀI TẬP -->
+        <!-- DANH SÁCH BÀI TẬP -->
         <section class="item-section">
             <h2>📚 Hoạt động học tập</h2>
             <div id="items-container"></div>
