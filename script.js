@@ -1,11 +1,12 @@
 // 1. CẤU HÌNH FIREBASE (Thay bằng config từ Firebase Console của bạn)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDGo7vga_lpcmYfrbz-D9I-qLt6Pm__6fE",
+  authDomain: "time-manager-backend.firebaseapp.com",
+  projectId: "time-manager-backend",
+  storageBucket: "time-manager-backend.firebasestorage.app",
+  messagingSenderId: "559854670704",
+  appId: "1:559854670704:web:54ae2c5088e2670f2a35b5",
+  measurementId: "G-PCDLP66F0M"
 };
 
 firebase.initializeApp(firebaseConfig);
