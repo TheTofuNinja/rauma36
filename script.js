@@ -18,43 +18,53 @@ let currentUser = null;
 let gameTime = 0;
 let timer = null;
 let items = [];
+let authMode = 'login'; // 'login' hoặc 'register'
 
 const gameTimeElement = document.getElementById("game-time");
 const itemsContainer = document.getElementById("items-container");
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
 
-// 3. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ / ĐĂNG XUẤT
-function register() {
-    const email = document.getElementById("auth-email").value;
-    const pass = document.getElementById("auth-password").value;
-    auth.createUserWithEmailAndPassword(email, pass)
-        .then(() => alert("Đăng ký thành công!"))
-        .catch(err => alert("Lỗi: " + err.message));
+// 3. XỬ LÝ CHUYỂN MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ
+function setAuthMode(mode) {
+    authMode = mode;
 }
 
-function login() {
+function handleAuthSubmit(event) {
+    event.preventDefault();
     const email = document.getElementById("auth-email").value;
     const pass = document.getElementById("auth-password").value;
-    auth.signInWithEmailAndPassword(email, pass)
-        .catch(err => alert("Lỗi: " + err.message));
+
+    if (authMode === 'register') {
+        auth.createUserWithEmailAndPassword(email, pass)
+            .then(() => alert("Đăng ký thành công!"))
+            .catch(err => alert("Lỗi: " + err.message));
+    } else {
+        auth.signInWithEmailAndPassword(email, pass)
+            .catch(err => alert("Lỗi đăng nhập: " + err.message));
+    }
 }
 
 function logout() {
     auth.signOut();
 }
 
-// Lắng nghe trạng thái Đăng nhập
+// 4. LẮNG NGHE TRẠNG THÁI ĐĂNG NHẬP ĐỂ CHUYỂN TRANG
 auth.onAuthStateChanged(user => {
     currentUser = user;
+    const authScreen = document.getElementById("auth-screen");
+    const mainApp = document.getElementById("main-app");
+
     if (user) {
-        document.getElementById("auth-logged-out").style.display = "none";
-        document.getElementById("auth-logged-in").style.display = "block";
+        // Đã đăng nhập -> Hủy màn hình Auth, hiển thị Trang chính
+        authScreen.style.display = "none";
+        mainApp.style.display = "block";
         document.getElementById("user-email").textContent = user.email;
-        loadUserData(); // Tải dữ liệu từ database khi đăng nhập thành công
+        loadUserData();
     } else {
-        document.getElementById("auth-logged-out").style.display = "block";
-        document.getElementById("auth-logged-in").style.display = "none";
+        // Chưa đăng nhập / Đã Đăng xuất -> Hiện màn hình Auth full-page, ẩn Trang chính
+        authScreen.style.display = "flex";
+        mainApp.style.display = "none";
         items = [];
         gameTime = 0;
         updateDisplay();
@@ -62,14 +72,12 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// 4. LƯU & TẢI DỮ LIỆU TỪ BACKEND (FIRESTORE)
+// 5. TẢI VÀ LƯU DỮ LIỆU CỦA USER
 function saveUserData() {
     if (!currentUser) return;
     db.collection("users").doc(currentUser.uid).set({
         gameTime: gameTime,
         items: items
-    }).then(() => {
-        console.log("Đã lưu dữ liệu thành công!");
     });
 }
 
@@ -81,7 +89,6 @@ function loadUserData() {
             gameTime = data.gameTime || 0;
             items = data.items || [];
         } else {
-            // Mặc định cho người dùng mới
             gameTime = 0;
             items = [
                 { name: "Rewrite Tiếng Anh", count: 0, limit: 20, reward: 20 },
@@ -94,7 +101,7 @@ function loadUserData() {
     });
 }
 
-// 5. HIỂN THỊ VÀ XỬ LÝ SỬA / XÓA HOẠT ĐỘNG
+// 6. RENDER CÁC HOẠT ĐỘNG VÀ QUẢN LÝ
 function renderItems() {
     itemsContainer.innerHTML = "";
 
@@ -128,18 +135,17 @@ function renderItems() {
 
 function handleFormSubmit(event) {
     event.preventDefault();
-    if (!currentUser) return alert("Vui lòng đăng nhập để thực hiện!");
+    if (!currentUser) return;
 
     const editIndex = parseInt(document.getElementById("edit-index").value);
     const nameInput = document.getElementById("item-name");
     const limitInput = document.getElementById("item-limit");
     const rewardInput = document.getElementById("item-reward");
 
-    const rewardMinutes = parseFloat(rewardInput.value) / 3; // Chia 3 như yêu cầu
+    const rewardMinutes = parseFloat(rewardInput.value) / 3;
     const rewardSeconds = Math.round(rewardMinutes * 60);
 
     if (editIndex === -1) {
-        // THÊM MỚI
         items.push({
             name: nameInput.value,
             count: 0,
@@ -147,7 +153,6 @@ function handleFormSubmit(event) {
             reward: rewardSeconds
         });
     } else {
-        // CẬP NHẬT / SỬA
         items[editIndex].name = nameInput.value;
         items[editIndex].limit = parseInt(limitInput.value);
         items[editIndex].reward = rewardSeconds;
@@ -167,7 +172,6 @@ function editItem(index) {
     document.getElementById("edit-index").value = index;
     document.getElementById("item-name").value = item.name;
     document.getElementById("item-limit").value = item.limit;
-    // Đổi giây ra phút thưởng thực tế (nhân 3 lại để hiển thị cho người dùng chỉnh sửa)
     document.getElementById("item-reward").value = (item.reward / 60) * 3;
 
     document.getElementById("form-title").textContent = "✏️ Sửa hoạt động";
@@ -187,14 +191,12 @@ function cancelEdit() {
 }
 
 function deleteItem(index) {
-    if (!currentUser) return alert("Vui lòng đăng nhập!");
     items.splice(index, 1);
     saveUserData();
     renderItems();
 }
 
 function completeItem(index) {
-    if (!currentUser) return alert("Vui lòng đăng nhập!");
     let item = items[index];
     if (item.count >= item.limit) return;
 
@@ -227,7 +229,6 @@ function startGame() {
         if (gameTime > 0) {
             gameTime--;
             updateDisplay();
-            // Lưu thời gian game đếm ngược định kỳ
             if (gameTime % 10 === 0) saveUserData(); 
         } else {
             pauseGame();
@@ -241,6 +242,10 @@ function pauseGame() {
     clearInterval(timer);
     timer = null;
     saveUserData();
+
+    if (startBtn) startBtn.disabled = false;
+    if (pauseBtn) pauseBtn.disabled = true;
+}
 
     if (startBtn) startBtn.disabled = false;
     if (pauseBtn) pauseBtn.disabled = true;
