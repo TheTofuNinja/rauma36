@@ -56,7 +56,7 @@ button {
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    transition: all 0.2 ease;
+    transition: all 0.2s ease;
 }
 
 button:hover:not(disabled) {
