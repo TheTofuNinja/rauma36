@@ -1,46 +1,42 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>My Time Manager</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <main class="container">
-
         <h1>My Time Manager</h1>
 
         <section class="game-card">
+            <h2>🎮 Game Time</h2>
+            <div id="game-time">00:00</div>
+            <div class="timer-controls">
+                <button id="start-btn" onclick="startGame()">▶ Play Game</button>
+                <button id="pause-btn" onclick="pauseGame()" disabled>⏸ Tạm dừng</button>
+            </div>
+        </section>
 
-    <h2>🎮 Game Time</h2>
+        <!-- FORM THÊM HOẠT ĐỘNG MỚI -->
+        <section class="add-item-card">
+            <h2>➕ Thêm hoạt động mới</h2>
+            <form id="add-item-form" onsubmit="addNewItem(event)">
+                <input type="text" id="item-name" placeholder="Tên hoạt động (vd: Giải Toán)" required>
+                <input type="number" id="item-limit" placeholder="Số lần tối đa" min="1" required>
+                <input type="number" id="item-reward" placeholder="Phút thưởng / 1 lần" min="1" required>
+                <button type="submit" class="btn-add">Thêm hoạt động</button>
+            </form>
+        </section>
 
-    <div id="game-time">
-        00:00
-    </div>
-    <div class="timer-controls">
-        <button id="start-btn" onclick="startGame()">▶ Play Game</button>
-        <button id="pause-btn" onclick="pauseGame()" disabled>⏸ Tạm dừng</button>
-    </div>
-
-</section>
-
-<section class="item-section">
-
-    <h2>📚 Hoạt động học tập</h2>
-
-    <div id="items-container"></div>
-
-</section>
+        <section class="item-section">
+            <h2>📚 Hoạt động học tập</h2>
+            <div id="items-container"></div>
+        </section>
     </main>
 
     <script src="script.js"></script>
-
 </body>
-
 </html>
