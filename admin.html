@@ -1,1 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Monitor - Time Manager</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- SDK Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        body { background: #f4f6f8; font-family: sans-serif; padding: 20px; }
+        .admin-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 15px; }
+        .user-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; background: #fafafa; }
+        .badge { background: #673AB7; color: white; padding: 3px 8px; border-radius: 6px; font-size: 12px; }
+    </style>
+</head>
+<body>
 
+    <div class="admin-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>🛡️ Admin Monitor Panel</h2>
+            <button onclick="auth.signOut()" class="btn-logout">Đăng xuất Admin</button>
+        </div>
+        <p>Quản lý hệ thống và theo dõi tiến trình người dùng.</p>
+    </div>
+
+    <!-- MÀN HÌNH XÁC THỰC ADMIN -->
+    <div id="admin-login-box" class="admin-card" style="text-align: center; max-width: 400px; margin: 40px auto;">
+        <h3>Đăng nhập Quyền Admin</h3>
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Chỉ tài khoản Admin được phép truy cập</p>
+        <input type="email" id="admin-email" placeholder="Email Admin" style="width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box;">
+        <input type="password" id="admin-pass" placeholder="Mật khẩu" style="width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box;">
+        <button onclick="loginAdmin()" class="btn-primary" style="width: 100%;">Đăng nhập Monitor</button>
+    </div>
+
+    <!-- MÀN HÌNH DASHBOARD MONITOR -->
+    <div id="admin-dashboard" style="display: none;">
+        <div class="admin-card">
+            <h3>📊 Thống kê tổng quan</h3>
+            <p><strong>Tổng số người dùng:</strong> <span id="total-users">0</span></p>
+        </div>
+
+        <div class="admin-card">
+            <h3>👥 Danh sách Người dùng & Tiến trình</h3>
+            <div id="users-list" class="user-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // 1. CẤU HÌNH FIREBASE (Dán config của bạn vào đây)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ⚠️ THAY EMAIL CỦA BẠN VÀO ĐÂY CỦA BẠN
+        const ADMIN_EMAIL = "email_cua_ban@gmail.com"; 
+
+        function loginAdmin() {
+            const email = document.getElementById("admin-email").value;
+            const pass = document.getElementById("admin-pass").value;
+
+            if(email !== ADMIN_EMAIL) {
+                alert("Tài khoản này không có quyền Admin!");
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch(err => alert("Lỗi đăng nhập: " + err.message));
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById("admin-login-box").style.display = "none";
+                document.getElementById("admin-dashboard").style.display = "block";
+                fetchMonitorData();
+            } else {
+                if(user) alert("Bạn không có quyền truy cập trang Admin!");
+                document.getElementById("admin-login-box").style.display = "block";
+                document.getElementById("admin-dashboard").style.display = "none";
+            }
+        });
+
+        // Tải toàn bộ dữ liệu người dùng từ Firestore
+        function fetchMonitorData() {
+            db.collection("users").get().then(snapshot => {
+                document.getElementById("total-users").textContent = snapshot.size;
+                const usersList = document.getElementById("users-list");
+                usersList.innerHTML = "";
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const userId = doc.id;
+                    const gameMin = Math.floor((data.gameTime || 0) / 60);
+                    const gameSec = (data.gameTime || 0) % 60;
+                    
+                    let itemsHTML = "";
+                    if (data.items && data.items.length > 0) {
+                        data.items.forEach(item => {
+                            itemsHTML += `<li>${item.name}: <b>${item.count}/${item.limit}</b></li>`;
+                        });
+                    } else {
+                        itemsHTML = "<i>Chưa có dữ liệu bài tập</i>";
+                    }
+
+                    usersList.innerHTML += `
+                        <div class="user-card">
+                            <p><strong>UID:</strong> <span style="font-size: 11px; color:#666;">${userId}</span></p>
+                            <p>🎮 <strong>Game Time tích lũy:</strong> <span class="badge">${gameMin}m ${gameSec}s</span></p>
+                            <hr style="border:0; border-top: 1px solid #eee; margin: 10px 0;">
+                            <p><strong>Danh sách Task:</strong></p>
+                            <ul style="padding-left: 20px; font-size: 13px;">${itemsHTML}</ul>
+                        </div>
+                    `;
+                });
+            });
+        }
+    </script>
+</body>
+</html>
