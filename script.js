@@ -19,6 +19,13 @@ let gameTime = 0;
 let timer = null;
 let items = [];
 
+let lastResetKey = null;
+let playSessionSeconds = 0;
+
+const DAILY_RESET_HOUR = 7;
+const BREAK_AFTER_SECONDS = 60 * 60;
+const MAX_GAME_TIME = 4 * 60 * 60;
+
 const gameTimeElement = document.getElementById("game-time");
 const itemsContainer = document.getElementById("items-container");
 const startBtn = document.getElementById("start-btn");
@@ -83,6 +90,7 @@ function saveUserData() {
     db.collection("users").doc(currentUser.uid).set({
         gameTime: gameTime,
         items: items
+        lastResetKey: lastResetKey
     });
 }
 
@@ -93,6 +101,7 @@ function loadUserData() {
             const data = doc.data();
             gameTime = data.gameTime || 0;
             items = data.items || [];
+            lastResetKey = data.lastResetKey || getResetKey();
         } else {
             gameTime = 0;
             items = [
@@ -103,8 +112,49 @@ function loadUserData() {
         }
         updateDisplay();
         renderItems();
+        checkDailyReset();
     });
 }
+
+function checkDailyReset() {
+    const resetKey = getResetKey();
+
+    if (lastResetKey === null) {
+        lastResetKey = resetKey;
+        return;
+    }
+
+    if (resetKey !== lastResetKey) {
+
+        for (let item of items) {
+            item.count = 0;
+        }
+
+        lastResetKey = resetKey;
+
+        saveUserData();
+        renderItems();
+
+        alert("🌅 Ngày mới bắt đầu! Các hoạt động đã được reset.");
+    }
+}
+
+function checkGameTimeLimit() {
+
+    if (gameTime > MAX_GAME_TIME) {
+
+        gameTime = 0;
+
+        saveUserData();
+        updateDisplay();
+
+        alert(
+            "⚠️ Bạn đã tích quá 4 giờ Game Time.\n" +
+            "Thời gian chơi đã được đặt lại về 0."
+        );
+    }
+}
+
 
 // 6. QUẢN LÝ TÁC VỤ VÀ ĐỒNG HỒ
 function renderItems() {
@@ -233,6 +283,7 @@ function startGame() {
     timer = setInterval(() => {
         if (gameTime > 0) {
             gameTime--;
+            playSessionSeconds++;
             updateDisplay();
             if (gameTime % 10 === 0) saveUserData(); 
         } else {
