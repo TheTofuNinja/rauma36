@@ -281,24 +281,65 @@ function startGame() {
     if (pauseBtn) pauseBtn.disabled = false;
 
     timer = setInterval(() => {
-        if (gameTime > 0) {
-            gameTime--;
-            playSessionSeconds++;
-            updateDisplay();
-            if (gameTime % 10 === 0) saveUserData(); 
-        } else {
-            pauseGame();
-            saveUserData();
-            alert("⏰ Hết giờ chơi!");
-        }
-    }, 1000);
+
+      if (gameTime > 0) {
+  
+          gameTime--;
+  
+          playSessionSeconds++;
+  
+          updateDisplay();
+  
+          if (playSessionSeconds >= BREAK_AFTER_SECONDS) {
+              showBreakReminder();
+          }
+  
+          if (gameTime % 10 === 0) {
+              saveUserData();
+          }
+  
+      } else {
+  
+          pauseGame();
+  
+          saveUserData();
+  
+          alert("⏰ Hết giờ chơi!");
+      }
+  
+  }, 1000);
+}
+
+function showBreakReminder() {
+
+    const reminder = document.getElementById("break-reminder");
+
+    if (!reminder) return;
+
+    reminder.classList.remove("hidden");
 }
 
 function pauseGame() {
+
     clearInterval(timer);
     timer = null;
+
+    playSessionSeconds = 0;
+
+    const reminder = document.getElementById("break-reminder");
+
+    if (reminder) {
+        reminder.classList.add("hidden");
+    }
+
     saveUserData();
 
     if (startBtn) startBtn.disabled = false;
     if (pauseBtn) pauseBtn.disabled = true;
 }
+setInterval(() => {
+
+    updateResetTimer();
+    checkDailyReset();
+
+}, 1000);
