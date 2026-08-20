@@ -139,6 +139,53 @@ function checkDailyReset() {
     }
 }
 
+function getResetKey() {
+    const now = new Date();
+
+    // Trước 07:00 thì vẫn thuộc ngày học hôm trước
+    if (now.getHours() < DAILY_RESET_HOUR) {
+        now.setDate(now.getDate() - 1);
+    }
+
+    return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+}
+
+
+function getNextResetTime() {
+    const now = new Date();
+
+    let nextReset = new Date(now);
+
+    nextReset.setHours(DAILY_RESET_HOUR, 0, 0, 0);
+
+    if (now >= nextReset) {
+        nextReset.setDate(nextReset.getDate() + 1);
+    }
+
+    return nextReset;
+}
+
+
+function updateResetTimer() {
+    const element = document.getElementById("daily-reset-timer");
+
+    if (!element) return;
+
+    const now = new Date();
+    const nextReset = getNextResetTime();
+
+    const difference = nextReset - now;
+
+    const totalSeconds = Math.floor(difference / 1000);
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    element.textContent =
+        `${hours} giờ ${minutes} phút ${seconds} giây`;
+}
+
 function checkGameTimeLimit() {
 
     if (gameTime > MAX_GAME_TIME) {
