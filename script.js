@@ -89,7 +89,7 @@ function saveUserData() {
     if (!currentUser) return;
     db.collection("users").doc(currentUser.uid).set({
         gameTime: gameTime,
-        items: items
+        items: items,
         lastResetKey: lastResetKey
     });
 }
