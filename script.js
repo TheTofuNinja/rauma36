@@ -304,6 +304,8 @@ function completeItem(index) {
 
     item.count++;
     gameTime += item.reward;
+
+    checkGameTimeLimit();
     
     saveUserData();
     updateDisplay();
